@@ -4,18 +4,20 @@
 
 **Finance × Data Analytics | Python · Pandas · Risk Metrics · Data Visualization · Streamlit**
 
+**[🚀 Open the live NYSE Market Pulse dashboard](https://nyse-market-pulse-analysis-me.streamlit.app/)** · [Source code](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis) · [Verified historical findings](docs/verified_historical_2026-10-21.md)
+
 [![Python tests and offline demonstration](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/actions/workflows/ci.yml)
 
-> **Project status:** Historical GitHub Actions research and independent data checks have passed; the Streamlit dashboard can fetch and cache verified historical prices when available. Hosting still requires the owner to deploy the app. Real-market outputs are shared only as generated research artifacts, **not** as a committed Yahoo price-history dataset. The preview image below is a **synthetic example**; it is *not* a historical market chart.
+> **Project status:** Historical GitHub Actions research and independent data checks have passed; the Streamlit dashboard can fetch and cache verified historical prices when available. The owner has deployed the public dashboard, and its historical-data overview was confirmed from the hosted app on October 22, 2026. Real-market outputs are shared only as generated research artifacts, **not** as a committed Yahoo price-history dataset. The preview image below is a **synthetic example**; it is *not* a historical market chart.
 
-## Phase 2 — Interactive dashboard (deployment-ready source)
+## Phase 2 — Live interactive Streamlit dashboard
 
 The [Streamlit dashboard](app.py) now loads **verified historical adjusted market prices on demand**, without expecting a local Yahoo CSV in the public repository. Data are cached for **one hour**, date and ticker filters re-compute visualizations without another request, and a manual refresh is available. Visitors can explore growth of $100, annualized returns, realized volatility, drawdowns, company risk/return, correlations and **11-company sample** breadth. The dashboard checks provider coverage/freshness and **never substitutes synthetic data when a live download fails**.
 
 - **Default source:** historical Yahoo Finance prices for 11 selected NYSE stocks plus the SPY benchmark; **not intraday quotes**.
 - **Explicit optional source:** prominently labeled synthetic demo, for offline product tours and CI smoke tests.
 - **No raw-provider-data distribution:** price history is held in the Streamlit cache; visitors can download only derived metrics.
-- **Deployment:** the app's source and configuration are ready. The repository owner must separately sign in and deploy it to Streamlit Community Cloud. **No live Streamlit URL has been created or verified yet.**
+- **Public dashboard:** **[Launch the live interactive app](https://nyse-market-pulse-analysis-me.streamlit.app/)**. On October 22, 2026, the hosted page displayed validated Yahoo Finance adjusted prices through October 21, 2026 (954 aligned trading sessions), matching the dated research snapshot. Data availability can change; this is not a real-time market feed.
 
 **[Step-by-step Streamlit deployment instructions](docs/streamlit_deployment.md)** · [Dashboard source](app.py) · [Dashboard data & validation](marketpulse/dashboard_data.py)
 
