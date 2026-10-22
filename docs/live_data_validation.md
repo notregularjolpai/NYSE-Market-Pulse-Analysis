@@ -40,6 +40,8 @@ Open **Actions → Historical Market Research** and select a successful run. Its
 - Adjusted prices are determined by third-party provider methodology and may be revised retroactively. Business-day gaps from stock-market holidays are expected; missing quotes *within a common trading session* are not filled.
 - Output is retrospective educational analysis, not real-time quotes, an investment product or advice.
 
+See the [verified historical research snapshot dated October 21, 2026](verified_historical_2026-10-21.md), which records an actual passing live GitHub Actions run and summarizes its calculated metrics.
+
 ## Source references
 
 - [yfinance downloads and parameter definitions](https://ranaroussi.github.io/yfinance/reference/api/yfinance.download.html)

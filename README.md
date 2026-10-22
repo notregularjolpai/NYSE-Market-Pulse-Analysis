@@ -8,6 +8,22 @@
 
 > **Project status:** Automated offline tests pass. A separate live-data GitHub Actions workflow retrieves and validates historical adjusted prices when the source is available. Real-market outputs are shared only as generated research artifacts, **not** as a committed Yahoo price-history dataset. The preview image below is a **synthetic example**; it is *not* a historical market chart.
 
+## Real historical research — independently verified
+
+A GitHub Actions run **successfully downloaded and verified real historical adjusted stock prices**, from **January 3, 2023 to October 21, 2026** (954 common trading sessions). Results from this dated run include:
+
+| Historical metric | SPY (S&P 500 ETF) | 11-stock NYSE sample* |
+|:--|--:|--:|
+| Cumulative return | **112.8%** | **79.8%** |
+| Annualized return (CAGR) | **22.1%** | **16.8%** |
+| Annualized volatility | **14.9%** | **13.5%** |
+| Maximum drawdown | **-18.8%** | **-15.3%** |
+| Historical Sharpe (0% risk-free) | **1.42** | **1.22** |
+
+*The sample holds eleven hand-selected NYSE companies, one per GICS sector, **rebalanced daily** with no trading costs. Not the full NYSE or a sector-index portfolio. All figures are historical, provider-derived, and subject to revision; not investment advice.*
+
+**Read the [verified October 21, 2026 research findings](docs/verified_historical_2026-10-21.md)** or inspect the [successful live GitHub Actions run](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/actions/runs/39723376151) for the dated research brief, charts, QA metadata and verification artifact. The following home-page chart is a **clearly marked synthetic visualization**, not this real-data result.
+
 ![NYSE Market Pulse preview — SIMULATED DEMO, not market data](assets/demo_preview.png)
 
 ## Executive summary
@@ -150,6 +166,7 @@ NYSE-Market-Pulse-Analysis/
 ├── docs/methodology.md         # Research design & limitations
 ├── docs/data_dictionary.md
 ├── docs/live_data_validation.md # Live source checks and reproduction
+├── docs/verified_historical_2026-10-21.md # Dated, verified real-data snapshot
 ├── data/README.md
 ├── assets/demo_preview.png     # Synthetic illustration, not real market
 ├── tests/test_analytics.py
