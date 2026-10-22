@@ -60,17 +60,20 @@ def download_adjusted_prices(start: str, end: str) -> pd.DataFrame:
     except ImportError as exc:
         raise MarketDataError("Install requirements.txt to enable market downloads.") from exc
 
-    raw = yf.download(
-        tickers=TICKERS,
-        start=start,
-        end=end,
-        interval="1d",
-        auto_adjust=True,
-        progress=False,
-        threads=True,
-        group_by="column",
-        multi_level_index=True,
-    )
+    try:
+        raw = yf.download(
+            tickers=TICKERS,
+            start=start,
+            end=end,
+            interval="1d",
+            auto_adjust=True,
+            progress=False,
+            threads=True,
+            group_by="column",
+            multi_level_index=True,
+        )
+    except Exception as exc:
+        raise MarketDataError("Historical quote download failed; the data provider may be unavailable or rate-limited.") from exc
     if raw is None or raw.empty:
         raise MarketDataError("The provider returned no data. Check your internet connection.")
     if isinstance(raw.columns, pd.MultiIndex):

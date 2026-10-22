@@ -6,7 +6,27 @@
 
 [![Python tests and offline demonstration](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/actions/workflows/ci.yml)
 
-> **Project status:** Automated offline tests pass. A separate live-data GitHub Actions workflow retrieves and validates historical adjusted prices when the source is available. Real-market outputs are shared only as generated research artifacts, **not** as a committed Yahoo price-history dataset. The preview image below is a **synthetic example**; it is *not* a historical market chart.
+> **Project status:** Historical GitHub Actions research and independent data checks have passed; the Streamlit dashboard can fetch and cache verified historical prices when available. Hosting still requires the owner to deploy the app. Real-market outputs are shared only as generated research artifacts, **not** as a committed Yahoo price-history dataset. The preview image below is a **synthetic example**; it is *not* a historical market chart.
+
+## Phase 2 — Interactive dashboard (deployment-ready source)
+
+The [Streamlit dashboard](app.py) now loads **verified historical adjusted market prices on demand**, without expecting a local Yahoo CSV in the public repository. Data are cached for **one hour**, date and ticker filters re-compute visualizations without another request, and a manual refresh is available. Visitors can explore growth of $100, annualized returns, realized volatility, drawdowns, company risk/return, correlations and **11-company sample** breadth. The dashboard checks provider coverage/freshness and **never substitutes synthetic data when a live download fails**.
+
+- **Default source:** historical Yahoo Finance prices for 11 selected NYSE stocks plus the SPY benchmark; **not intraday quotes**.
+- **Explicit optional source:** prominently labeled synthetic demo, for offline product tours and CI smoke tests.
+- **No raw-provider-data distribution:** price history is held in the Streamlit cache; visitors can download only derived metrics.
+- **Deployment:** the app's source and configuration are ready. The repository owner must separately sign in and deploy it to Streamlit Community Cloud. **No live Streamlit URL has been created or verified yet.**
+
+**[Step-by-step Streamlit deployment instructions](docs/streamlit_deployment.md)** · [Dashboard source](app.py) · [Dashboard data & validation](marketpulse/dashboard_data.py)
+
+To run the dashboard locally:
+
+```bash
+python -m pip install -r requirements.txt
+streamlit run app.py
+```
+
+If the provider is unavailable, the dashboard displays an error instead of invented historical figures. Use the sidebar's **Synthetic demonstration** option to inspect functionality separately.
 
 ## Real historical research — independently verified
 
