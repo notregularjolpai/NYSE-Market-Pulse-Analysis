@@ -2,7 +2,7 @@
 
 **Code readiness:** `app.py` is a public Streamlit app that retrieves historical Yahoo Finance adjusted closing prices server-side, validates all 12 series, and stores them in an **ephemeral hourly Streamlit cache**. A rate limit, connectivity error, stale dataset or failed quality check produces a visible failure message; it does **not** silently show fabricated prices. An intentionally selected synthetic demo remains available.
 
-**Hosting status:** Deployment requires the repository owner's separate Streamlit Community Cloud sign-in and GitHub authorization. A `streamlit.app` URL must not be claimed until the owner deploys the app successfully.
+**Hosting status:** **Deployed publicly:** [https://nyse-market-pulse-analysis-me.streamlit.app/](https://nyse-market-pulse-analysis-me.streamlit.app/). The owner-provided screenshot on October 22, 2026 confirmed that the app loaded validated historical data through October 21, 2026 and rendered key performance indicators and the performance chart. Other downstream charts were not independently inspected. The provider may fail during future live refreshes.
 
 ## Deploy (repository owner)
 
@@ -14,7 +14,7 @@
 6. In **Advanced settings**, choose **Python 3.11**. Dependencies install automatically from the repository-root `requirements.txt`.
 7. Optional: choose an available app URL; **do not add credentials, API keys or secrets**. The current data source uses no user API key.
 8. Click **Deploy**. After launch, confirm the **Historical market prices** source is selected, the last observation date is shown, and a chart appears. Check that you can switch to the visibly labeled **Synthetic demonstration**.
-9. Copy the *actual* URL from the deployed app into the GitHub repository's **About → Website** field, profile README, and portfolio website. Do not guess a URL before deployment.
+9. The verified public URL is [https://nyse-market-pulse-analysis-me.streamlit.app/](https://nyse-market-pulse-analysis-me.streamlit.app/). The source README, GitHub profile README, and portfolio project card now link to it. **Repository About → Website** is managed through GitHub's repository-details UI and may still need to be set manually.
 
 ## Controls and provider behavior
 
