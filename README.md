@@ -1,1 +1,1 @@
-# NYSE-Market-Pulse-Analysis
+# NEW YORK Stock Exchange-Market-Pulse-Analysis
