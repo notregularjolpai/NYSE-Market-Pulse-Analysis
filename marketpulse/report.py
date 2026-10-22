@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from pathlib import Path
+from datetime import datetime, timezone
 
 import pandas as pd
 
@@ -20,11 +21,16 @@ def write_report(prices: pd.DataFrame, destination: str | Path, demo: bool, risk
     last_date = prices.index[-1].date().isoformat()
     first_date = prices.index[0].date().isoformat()
     heading = "# SYNTHETIC DEMO — NOT REAL MARKET DATA\n\n" if demo else ""
+    generated_utc = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    headline_table = p.loc[[BENCHMARK, PORTFOLIO], ["Cumulative Return", "Annualized Return (CAGR)", "Annualized Volatility", "Max Drawdown", "Sharpe Ratio", "Beta vs SPY"]]
+    table_md = "| Symbol | Cum. return | CAGR | Annual vol. | Max drawdown | Sharpe | Beta |\n|:--|--:|--:|--:|--:|--:|--:|\n"
+    for symbol, row in headline_table.iterrows():
+        table_md += f"| {symbol} | {row['Cumulative Return']:.1%} | {row['Annualized Return (CAGR)']:.1%} | {row['Annualized Volatility']:.1%} | {row['Max Drawdown']:.1%} | {row['Sharpe Ratio']:.2f} | {row['Beta vs SPY']:.2f} |\n"
 
     fmt = lambda x: f"{x:.1%}"
     report = f"""{heading}# NYSE Market Pulse — Performance & Risk Research Brief
 
-**Data dates:** {first_date} to {last_date}  
+**Data dates:** {first_date} to {last_date}  \n**Generated (UTC):** {generated_utc}  \n**Aligned price observations:** {len(prices):,} across all 12 symbols  
 **Source:** {'Seeded synthetic series (educational demo)' if demo else 'Yahoo Finance via yfinance, adjusted closing prices'}  
 **Universe:** 11 selected NYSE-listed equities (one per GICS sector) + SPY on NYSE Arca  
 **Risk-free rate assumption:** {risk_free_rate:.1%} annually  
@@ -37,6 +43,10 @@ def write_report(prices: pd.DataFrame, destination: str | Path, demo: bool, risk
 - **Highest sample CAGR:** {leader} ({STOCKS[leader][1]}) at {fmt(sample.loc[leader, 'Annualized Return (CAGR)'])}.
 - **Lowest sample CAGR:** {laggard} ({STOCKS[laggard][1]}) at {fmt(sample.loc[laggard, 'Annualized Return (CAGR)'])}.
 - **Sample breadth (63-session):** {latest_breadth:.1f}% of the 11 selected stocks had a positive trailing 63-trading-day return at the latest available date.
+
+## Performance summary (historical, not a forecast)
+
+{table_md}
 
 ## Interpretation
 

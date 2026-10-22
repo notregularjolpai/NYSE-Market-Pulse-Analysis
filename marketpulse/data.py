@@ -14,7 +14,9 @@ class MarketDataError(ValueError):
     """Raised when downloaded market data cannot support a reliable analysis."""
 
 
-def validate_prices(prices: pd.DataFrame, min_rows: int = 90) -> pd.DataFrame:
+def validate_prices(
+    prices: pd.DataFrame, min_rows: int = 90, max_missing_fraction: float = 0.05
+) -> pd.DataFrame:
     """Ensure every ticker has enough complete, positive, aligned trading observations.
 
     The analysis deliberately does not forward-fill missing stock prices.
@@ -34,6 +36,12 @@ def validate_prices(prices: pd.DataFrame, min_rows: int = 90) -> pd.DataFrame:
     for ticker in TICKERS:
         clean[ticker] = pd.to_numeric(clean[ticker], errors="coerce")
     clean = clean.replace([np.inf, -np.inf], np.nan).sort_index()
+    missing_fraction = clean.isna().any(axis=1).mean()
+    if missing_fraction > max_missing_fraction:
+        raise MarketDataError(
+            f"{missing_fraction:.1%} of available sessions lack one or more quotes "
+            f"(maximum tolerated: {max_missing_fraction:.1%}). Investigate incomplete symbols."
+        )
     clean = clean.dropna(how="any")
     if len(clean) < min_rows:
         raise MarketDataError(

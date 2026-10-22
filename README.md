@@ -6,7 +6,7 @@
 
 [![Python tests and offline demonstration](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/actions/workflows/ci.yml)
 
-> **Project status:** Complete runnable research pipeline and dashboard source. To produce **real historical results**, run the live-data command below. The preview image shipped here is **synthetic and clearly marked**; it is *not* a stock-market chart.
+> **Project status:** Automated offline tests pass. A separate live-data GitHub Actions workflow retrieves and validates historical adjusted prices when the source is available. Real-market outputs are shared only as generated research artifacts, **not** as a committed Yahoo price-history dataset. The preview image below is a **synthetic example**; it is *not* a historical market chart.
 
 ![NYSE Market Pulse preview — SIMULATED DEMO, not market data](assets/demo_preview.png)
 
@@ -26,6 +26,18 @@ This research-style portfolio project evaluates **11 NYSE-listed equity examples
 - **Visual analysis:** six publication-ready charts; CSV exports; dated research brief and machine-readable run metadata.
 - **Interactive dashboard:** Streamlit charts and downloadable metrics for a selected analysis window.
 - **Quality controls:** automated pytest unit tests and a GitHub Actions offline build using reproducible synthetic data.
+
+## Verified historical-data workflow
+
+GitHub Actions provides a separate **[Historical Market Research](.github/workflows/historical-research.yml)** workflow to retrieve real data and generate a dated research brief. Its live-data job:
+
+1. Requests daily dividend/split-adjusted prices for 11 selected NYSE stocks and SPY (start inclusive, end exclusive).
+2. Checks all 12 symbols, at least 90 common dates, missing-session thresholds, positive values, data-window alignment, and freshness for near-current periods.
+3. Independently reconciles published cumulative returns and annualized volatility against saved adjusted prices, verifies SPY beta/correlation, and validates drawdown ranges.
+4. Uploads **only calculated research outputs** (metrics, charts, a dated report and run metadata) as an Actions artifact; raw provider prices remain excluded from the repository and artifact.
+5. Writes the source, as-of date and SPY/sample metrics to the GitHub Actions run summary. **A job failure means no verified live results were produced**, not that the synthetic demo can stand in for them.
+
+A fresh live-data run is triggered when the workflow changes or can be launched through **Actions → Historical Market Research → Run workflow**. See [Live Data Validation Protocol](docs/live_data_validation.md) for validation steps, known risks, and reproduction commands. Do not confuse chart dates, run execution dates, and current quotes.
 
 ## Coverage: 11 sectors, 11 NYSE companies
 
@@ -137,10 +149,12 @@ NYSE-Market-Pulse-Analysis/
 ├── notebooks/01_market_exploration.ipynb
 ├── docs/methodology.md         # Research design & limitations
 ├── docs/data_dictionary.md
+├── docs/live_data_validation.md # Live source checks and reproduction
 ├── data/README.md
 ├── assets/demo_preview.png     # Synthetic illustration, not real market
 ├── tests/test_analytics.py
 ├── .github/workflows/ci.yml
+├── .github/workflows/historical-research.yml
 ├── requirements.txt
 └── LICENSE
 ```
@@ -152,7 +166,7 @@ python -m pytest -q
 python scripts/run_analysis.py --demo
 ```
 
-Tests exercise return calculations, portfolio rebalancing, data validation, drawdowns, volatility, and reproducibility. The demo works without Yahoo data, and the GitHub Actions workflow will test the same functionality after you publish this repository.
+Tests exercise return calculations, portfolio rebalancing, data validation, drawdowns, volatility, and reproducibility. Separate tests cover live-data audit boundaries, missing-data rejection and independent output reconciliation. The demo works without Yahoo data, while the Historical Market Research workflow requires a functioning provider connection.
 
 ## Research limitations and ethics
 

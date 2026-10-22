@@ -1,0 +1,61 @@
+name: Historical Market Research
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/historical-research.yml'
+      - 'marketpulse/**'
+      - 'scripts/**'
+      - 'requirements.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  historical-prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run unit and audit tests
+        run: python -m pytest -q
+      - name: Download historical adjusted closes and generate report
+        run: python scripts/run_analysis.py --start 2023-01-01
+      - name: Independently validate market research outputs
+        run: python scripts/verify_historical.py
+      - name: Write dated research to workflow summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          metadata = json.loads(Path('outputs/market/run_metadata.json').read_text())
+          results = json.loads(Path('outputs/market/verification.json').read_text())
+          report = Path('outputs/market/research_brief.md').read_text()
+          assert metadata['dataset_type'] == 'HISTORICAL_PRICE_DATA'
+          assert results['financial_reconciliation']['passed']
+          summary = Path(os.environ['GITHUB_STEP_SUMMARY'])
+          text = ('## Verified historical NYSE research\n\n'
+                  f"**Observed data dates:** {metadata['dates']['first']} to {metadata['dates']['last']}  \n"
+                  f"**Provider:** {metadata['provider']}  \n"
+                  f"**Aligned observations:** {metadata['price_observations']}  \n"
+                  '**Independent metric reconciliation:** PASSED  \n\n'
+                  'The entire stock sample is not the whole NYSE; SPY is a broad-market benchmark.\n\n'
+                  + report[:11000])
+          summary.write_text(text, encoding='utf-8')
+          PY
+      - name: Upload verified analysis (NO raw Yahoo quotes)
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-research-verified
+          path: outputs/market/
+          if-no-files-found: error
+          retention-days: 30

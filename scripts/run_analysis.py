@@ -10,6 +10,9 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import hashlib
+from datetime import datetime, timezone
+import importlib.metadata as package_metadata
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -20,6 +23,7 @@ from marketpulse.analytics import daily_returns, market_breadth, monthly_returns
 from marketpulse.charts import export_charts  # noqa: E402
 from marketpulse.data import download_adjusted_prices, load_prices, make_demo_prices, save_prices  # noqa: E402
 from marketpulse.report import write_report  # noqa: E402
+from marketpulse.quality import audit_history, reconcile_outputs  # noqa: E402
 from marketpulse.universe import BENCHMARK, STOCKS, TICKERS  # noqa: E402
 
 
@@ -39,6 +43,7 @@ def main(argv: list[str] | None = None) -> int:
         if date.fromisoformat(args.start) >= date.fromisoformat(args.end):
             parser.error("--end (exclusive) must be later than --start")
 
+    fetched_at_utc = datetime.now(timezone.utc).isoformat(timespec="seconds")
     if args.demo:
         prices = make_demo_prices()
         source = "SYNTHETIC DEMO (seed=2026)"
@@ -56,8 +61,14 @@ def main(argv: list[str] | None = None) -> int:
             save_prices(prices, saved)
             source = "Yahoo Finance via yfinance (adjusted daily close)"
 
+    if args.demo:
+        quality = {"dataset_type": "SYNTHETIC_DEMO", "passed": False, "reason": "Synthetic data cannot establish real market coverage."}
+    else:
+        quality = audit_history(prices, args.start, args.end)
+
     folder.mkdir(parents=True, exist_ok=True)
     table = performance_table(prices, risk_free_rate=args.risk_free_rate)
+    reconciliation = reconcile_outputs(prices, table)
     table.to_csv(folder / "performance_metrics.csv", float_format="%.8f")
     daily_returns(prices).to_csv(folder / "daily_returns.csv", float_format="%.8f")
     monthly_returns(prices).to_csv(folder / "monthly_returns.csv", float_format="%.8f")
@@ -65,6 +76,11 @@ def main(argv: list[str] | None = None) -> int:
     images = export_charts(prices, folder, demo=args.demo)
     write_report(prices, folder / "research_brief.md", demo=args.demo, risk_free_rate=args.risk_free_rate)
     metadata = {
+        "fetched_or_loaded_at_utc": fetched_at_utc,
+        "requested_window": {"start_inclusive": args.start, "end_exclusive": args.end},
+        "provider_library": {"name": "yfinance", "installed_version": package_metadata.version("yfinance") if not args.demo else "not required for demo"},
+        "quality_audit": quality,
+        "financial_reconciliation": reconciliation,
         "dataset_type": "SYNTHETIC_DEMO" if args.demo else "HISTORICAL_PRICE_DATA",
         "provider": source,
         "exchange_universe": "11 curated NYSE listed company stocks; not full NYSE",
@@ -80,6 +96,11 @@ def main(argv: list[str] | None = None) -> int:
         "chart_files": images,
     }
     (folder / "run_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    if not args.demo:
+        # Quote files are local caches only: record SHA-256 but never redistribute quotes.
+        saved = ROOT / "data" / "processed" / "adjusted_close.csv"
+        metadata["local_price_cache_sha256"] = hashlib.sha256(saved.read_bytes()).hexdigest()
+        (folder / "run_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     print(f"\n{'SYNTHETIC DEMO' if args.demo else 'HISTORICAL MARKET'} RUN COMPLETED")
     print(f"Observations: {len(prices)}, from {metadata['dates']['first']} to {metadata['dates']['last']}")
     print(table[["Annualized Return (CAGR)", "Annualized Volatility", "Max Drawdown"]].round(3).to_string())

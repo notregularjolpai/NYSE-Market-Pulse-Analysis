@@ -13,7 +13,7 @@ The sample is deliberately **one NYSE company from each of the 11 common GICS se
 
 `yfinance` downloads daily adjusted OHLCV; the pipeline retains **adjusted Close** only. Adjusted series account for corporate actions as the provider calculates them. Data should be considered third-party estimates/records rather than an official NYSE historical tape. Yahoo usage rights may restrict redistribution, so market data caches are gitignored. Research periods must be read from generated metadata; no hard-coded market returns are claimed.
 
-The downloader validates missing symbols, strips unaligned/missing dates without forward fill, and requires at least 90 aligned closing-price observations. This excludes suspended/invalid days and may create common-sample selection effects. The provider may rate-limit or change its schema; the documented failure behavior is to stop with an error, not silently fabricate observations.
+The downloader validates missing symbols, rejects inputs with more than 5% missing or unaligned sessions, strips remaining dates without forward fill, and requires at least 90 aligned closing-price observations. This excludes suspended/invalid days and may create common-sample selection effects. The provider may rate-limit or change its schema; the documented failure behavior is to stop with an error, not silently fabricate observations.
 
 ## Return and risk definitions
 
@@ -45,3 +45,13 @@ Each of the 11 sample securities has 1/11 weight **re-established daily**. Portf
 - https://ranaroussi.github.io/yfinance/reference/api/yfinance.download.html
 - https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy
 - https://stockanalysis.com/list/nyse-stocks/
+
+## Quality audit, verification, and generated evidence
+
+`marketpulse/quality.py` checks the requested inclusive/exclusive window, future or near-current stale observations, all twelve aligned symbols, and daily adjusted-price changes larger than 80% (flagged for manual investigation, not automatically treated as a market event). Any failure stops the historical run; there is no fallback to synthetic data. Data with more than 5% dates missing any requested symbol is rejected before alignment. These conservative checks can exclude periods with provider gaps.
+
+`reconcile_outputs` recalculates individual cumulative returns, the 11-asset daily-rebalanced portfolio's compounded return, and annualized volatility independently from source prices. It also checks SPY self-beta and self-correlation and the maximum-drawdown range. The verifier rejects mismatches rather than publishing unverified metrics.
+
+The run metadata records the provider, collection timestamp, yfinance version, requested data window, observed window, symbols, numerical validation findings, risk-free-rate assumption and local input-cache SHA-256. The actual Yahoo adjusted-price CSV is omitted from GitHub and Actions artifacts to respect third-party usage restrictions. Artifacts report analysis outputs, **not** live quotes; execution does not prove source data are exchange-certified.
+
+See [live validation protocol](live_data_validation.md) for instructions to inspect successful GitHub Actions historical runs and reproduce the research using a local Python environment.
