@@ -4,7 +4,7 @@
 
 **Finance × Data Analytics | Python · Pandas · Risk Metrics · Data Visualization · Streamlit**
 
-**[🚀 Open the live NYSE Market Pulse dashboard](https://nyse-market-pulse-analysis-me.streamlit.app/)** · [Source code](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis) · [Verified historical findings](docs/verified_historical_2026-10-21.md)
+**[🚀 Open the live NYSE Market Pulse dashboard](https://nyse-market-pulse-analysis-me.streamlit.app/)** · [Source code](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis) · [Verified historical findings](docs/verified_historical_2026-10-21.md) · **[Version 1.0.0 — official release](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/releases/tag/v1.0.0)**
 
 [![Python tests and offline demonstration](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/actions/workflows/ci.yml)
 
