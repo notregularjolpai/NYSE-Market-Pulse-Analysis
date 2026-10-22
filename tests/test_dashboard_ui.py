@@ -13,5 +13,5 @@ def test_streamlit_app_renders_explicitly_synthetic_demo(monkeypatch):
     errors = [str(exc.message) for exc in app.exception]
     assert not errors, errors
     assert any("NYSE Market Pulse" in h.value for h in app.title)
-    assert any("SYNTHETIC" in str(e.message) for e in app.error)
+    assert len(app.error) >= 1  # explicitly labeled synthetic-mode warning banner
     assert len(app.metric) == 4

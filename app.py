@@ -134,7 +134,7 @@ fig = px.line(plot_frame, labels={"index": "Trading session", "value": "Portfoli
 fig.update_traces(line=dict(width=2))
 fig.update_layout(hovermode="x unified", legend=dict(orientation="h", y=-0.18),
                   margin=dict(l=15, r=15, t=15, b=15), height=435)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 st.markdown("### Return and risk")
 col1, col2 = st.columns(2)
@@ -149,14 +149,14 @@ with col1:
                          title="Risk–return map")
     scatter.update_traces(textposition="top center")
     scatter.update_layout(height=420, margin=dict(l=10, r=10, t=50, b=10))
-    st.plotly_chart(scatter, use_container_width=True)
+    st.plotly_chart(scatter, width="stretch")
 with col2:
     dd = drawdowns(wealth)[[BENCHMARK, PORTFOLIO]] * 100
     dd.columns = ["SPY", "Equal-weight NYSE sample"]
     dfig = px.line(dd, title="Historical drawdown", labels={"index": "Date", "value": "Drawdown (%)", "variable": "Asset"},
                    color_discrete_sequence=[NAVY, TEAL])
     dfig.update_layout(height=420, hovermode="x unified", margin=dict(l=10, r=10, t=50, b=10))
-    st.plotly_chart(dfig, use_container_width=True)
+    st.plotly_chart(dfig, width="stretch")
 
 col3, col4 = st.columns(2)
 with col3:
@@ -165,7 +165,7 @@ with col3:
     rfig = px.line(rv, title="30-session rolling annualized volatility", labels={"index": "Date", "value": "Volatility (%)", "variable": "Asset"},
                    color_discrete_sequence=[NAVY, TEAL])
     rfig.update_layout(height=380, margin=dict(l=10, r=10, t=50, b=10))
-    st.plotly_chart(rfig, use_container_width=True)
+    st.plotly_chart(rfig, width="stretch")
 with col4:
     sample_metrics = metrics.loc[list(STOCKS)].copy().reset_index()
     sample_metrics["CAGR (%)"] = sample_metrics["Annualized Return (CAGR)"] * 100
@@ -174,7 +174,7 @@ with col4:
                   color_continuous_scale="Teal", title="Individual NYSE stock returns by ticker",
                   hover_data=["Sector", "Annualized Volatility"])
     bfig.update_layout(height=380, coloraxis_showscale=False, margin=dict(l=10, r=10, t=50, b=10))
-    st.plotly_chart(bfig, use_container_width=True)
+    st.plotly_chart(bfig, width="stretch")
 st.caption("Each stock represents only itself, **not** its entire sector. Sample selection and daily rebalancing influence comparisons.")
 
 st.markdown("### Correlation and breadth")
@@ -184,14 +184,14 @@ with x:
     heat = go.Figure(go.Heatmap(z=corr.values, x=corr.columns, y=corr.index, zmin=-1, zmax=1,
                                 colorscale="RdBu", reversescale=False, zmid=0))
     heat.update_layout(title="Daily return correlations", height=430, margin=dict(l=15, r=15, t=50, b=15))
-    st.plotly_chart(heat, use_container_width=True)
+    st.plotly_chart(heat, width="stretch")
 with y:
     breadth = market_breadth(prices)
     br = px.line(breadth, title="11-company sample breadth · trailing 63 sessions",
                  labels={"index": "Date", "value": "Share of positive stocks (%)"}, color_discrete_sequence=[TEAL])
     br.update_layout(height=430, showlegend=False, margin=dict(l=15, r=15, t=50, b=15))
     br.update_yaxes(range=[0, 100])
-    st.plotly_chart(br, use_container_width=True)
+    st.plotly_chart(br, width="stretch")
 
 with st.expander("Methodology, data quality and download", expanded=False):
     st.markdown(f"""- **Price basis:** dividend/split-adjusted daily closing prices, not intraday or investment recommendations.
@@ -207,7 +207,7 @@ with st.expander("Methodology, data quality and download", expanded=False):
         "Cumulative Return": "{:.1%}", "Annualized Return (CAGR)": "{:.1%}",
         "Annualized Volatility": "{:.1%}", "Max Drawdown": "{:.1%}",
         "Sharpe Ratio": "{:.2f}", "Beta vs SPY": "{:.2f}", "Correlation vs SPY": "{:.2f}",
-    }), use_container_width=True)
+    }), width="stretch")
     st.download_button("Download derived metrics CSV", data=metrics.to_csv().encode("utf-8"),
                        file_name=("SYNTHETIC_DEMO_" if is_demo else "") + "nyse_market_metrics.csv", mime="text/csv")
 
