@@ -29,7 +29,7 @@ The October 22, 2026 GitHub Actions research run analyzed **954 aligned trading 
 
 These are **retrospective results**, not live quotes, predictions, or investable strategy results. Daily rebalancing assumes zero transaction costs and the sample is subject to selection and survivorship biases.
 
-**Research report:** [Verified historical findings](docs/verified_historical_2026-10-21.md)
+**Research report:** [Verified historical findings](https://github.com/notregularjolpai/NYSE-Market-Pulse-Analysis/blob/main/docs/verified_historical_2026-10-21.md)
 
 ## Validation and engineering
 
